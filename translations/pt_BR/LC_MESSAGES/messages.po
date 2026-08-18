@@ -123,7 +123,7 @@ msgstr "GRÁTIS"
 
 #: templates/index.html:145
 msgid "3 imports/day"
-msgstr "3 importações/dia"
+msgstr "3 Imports/dia"
 
 #: templates/index.html:146
 msgid "7 days of history"
@@ -135,15 +135,15 @@ msgstr "Estatísticas e gráficos completos da sessão"
 
 #: templates/index.html:148
 msgid "5 hand exports/day"
-msgstr "5 exportações de mãos/dia"
+msgstr "5 Exports de mãos/dia"
 
 #: templates/index.html:149
 msgid "1 tournament export/day"
-msgstr "1 exportação de torneio/dia"
+msgstr "1 Export de torneio/dia"
 
 #: templates/index.html:150 templates/index.html:163
 msgid "Whole-session exports"
-msgstr "Exportação da sessão completa"
+msgstr "Export da sessão completa"
 
 #: templates/index.html:153
 msgid "VS"
@@ -164,7 +164,7 @@ msgstr "garantido até o lançamento global"
 
 #: templates/index.html:161
 msgid "Unlimited imports"
-msgstr "Importações ilimitadas"
+msgstr "Imports ilimitados"
 
 #: templates/index.html:162
 msgid "History that never expires"
@@ -172,7 +172,7 @@ msgstr "Histórico que nunca expira"
 
 #: templates/index.html:164 templates/index.html:251
 msgid "Unlimited daily exports"
-msgstr "Exportações diárias ilimitadas"
+msgstr "Exports diários ilimitados"
 
 #: templates/index.html:165
 msgid "No surveys, ever"
@@ -200,7 +200,7 @@ msgstr "Buscando histórico de mãos… isso pode levar alguns segundos"
 
 #: templates/index.html:208
 msgid "Export Accuracy Notice"
-msgstr "Aviso de Precisão da Exportação"
+msgstr "Aviso de Precisão do Export"
 
 #: templates/index.html:209 templates/index.html:244 templates/index.html:629
 #: templates/index.html:682 templates/index.html:703 templates/index.html:718
@@ -268,7 +268,7 @@ msgstr "Histórico de mãos ilimitado (o plano grátis mostra as últimas 30)"
 
 #: templates/index.html:252
 msgid "Full tournament export access"
-msgstr "Acesso completo à exportação de torneios"
+msgstr "Acesso completo ao Export de torneios"
 
 #: templates/index.html:253
 msgid "More features coming…"
@@ -395,7 +395,7 @@ msgstr "Tipo"
 
 #: templates/index.html:415
 msgid "Export Format"
-msgstr "Formato de Exportação"
+msgstr "Formato do Export"
 
 #: templates/index.html:433
 msgid "Tournament Summary"
@@ -603,14 +603,14 @@ msgstr "Desbloquear"
 
 #: templates/index.html:680
 msgid "one more export"
-msgstr "mais uma exportação"
+msgstr "mais um export"
 
 #: templates/index.html:686
 msgid ""
 "Answer a short survey and your export starts automatically. Nothing is "
 "charged, and you can close this at any time."
 msgstr ""
-"Responda a uma pesquisa curta e sua exportação começa automaticamente. "
+"Responda a uma pesquisa curta e seu export começa automaticamente. "
 "Nada é cobrado, e você pode fechar isso a qualquer momento."
 
 #: templates/index.html:701
@@ -737,7 +737,7 @@ msgstr ""
 "Os únicos dados processados são o histórico de mãos contido no link "
 "público de replay que você fornece voluntariamente. Um ID de sessão "
 "anônimo é armazenado localmente no seu navegador para controlar seu uso "
-"diário de exportação de mãos avulsas (5/dia no plano grátis). Nenhuma "
+"diário de export de mãos avulsas (5/dia no plano grátis). Nenhuma "
 "informação pessoal identificável é coletada ou vendida."
 
 #: templates/index.html:800
@@ -777,7 +777,7 @@ msgstr ""
 "PokerTracker, DriveHUD, GTO Wizard — todas as ferramentas de treino "
 "sérias precisam de um arquivo de histórico de mãos. O PPPoker não fornece"
 " isso. O sistema de replay deles fica preso dentro do aplicativo, e não "
-"há botão de exportação à vista. Então, se você quer realmente melhorar "
+"há botão de export à vista. Então, se você quer realmente melhorar "
 "seu jogo, fica preso revendo mãos uma por uma em um visualizador mobile "
 "emperrado."
 
@@ -1022,7 +1022,7 @@ msgstr "Gamificação (pontos, sequências, emblemas)"
 
 #: templates/index.html:934
 msgid "Single-hand exports/day"
-msgstr "Exportações de mãos avulsas/dia"
+msgstr "Exports de mãos avulsas/dia"
 
 #: templates/index.html:934
 msgid "5/day"
@@ -1030,7 +1030,7 @@ msgstr "5/dia"
 
 #: templates/index.html:935
 msgid "Tournament exports/day"
-msgstr "Exportações de torneios/dia"
+msgstr "Exports de torneios/dia"
 
 #: templates/index.html:935
 msgid "1/day"
@@ -1053,9 +1053,9 @@ msgid ""
 "Exports need a free account. Beyond the first two hand exports each day, "
 "one short survey unlocks the next export — Pro never asks."
 msgstr ""
-"Exportações exigem uma conta gratuita. Depois das duas primeiras "
-"exportações de mãos por dia, uma pesquisa rápida desbloqueia a próxima "
-"exportação — o Pro nunca pede isso."
+"Exports exigem uma conta gratuita. Depois dos dois primeiros "
+"exports de mãos por dia, uma pesquisa rápida desbloqueia o próximo "
+"export — o Pro nunca pede isso."
 
 #: templates/index.html:940
 msgid "Pro is"
@@ -1088,7 +1088,7 @@ msgid ""
 "Points, streaks & weekly leaderboard — every import earns you points and "
 "unlocks badges, and there's a fresh leaderboard to climb each week"
 msgstr ""
-"Pontos, sequências e ranking semanal — cada importação rende pontos e "
+"Pontos, sequências e ranking semanal — cada Import rende pontos e "
 "desbloqueia emblemas, e há um novo ranking para subir a cada semana"
 
 #: templates/index.html:966
@@ -1139,12 +1139,12 @@ msgstr "Adicionado Firebase Analytics + rastreamento de sessão via Firestore"
 #: templates/index.html:985
 msgid "Platform-specific export filenames (PokerTracker, DriveHUD, GTOWizard)"
 msgstr ""
-"Nomes de arquivo de exportação específicos por plataforma (PokerTracker, "
+"Nomes de arquivo de export específicos por plataforma (PokerTracker, "
 "DriveHUD, GTOWizard)"
 
 #: templates/index.html:986
 msgid "Export buttons redesigned as 2×2 icon grid"
-msgstr "Botões de exportação redesenhados como grade de ícones 2×2"
+msgstr "Botões de Export redesenhados como grade de ícones 2×2"
 
 #: templates/index.html:987
 msgid "Mobile-first layout improvements throughout"
@@ -1170,7 +1170,7 @@ msgstr "Seção de Histórico de Torneios com pílulas MTT / Satellite / Won"
 
 #: templates/index.html:998
 msgid "JSON export endpoints for hands & tournaments"
-msgstr "Endpoints de exportação JSON para mãos e torneios"
+msgstr "Endpoints de Export JSON para mãos e torneios"
 
 #: templates/index.html:999
 msgid "DriveHUD replaces PokerStars branding throughout"
@@ -1190,7 +1190,7 @@ msgstr "Busca de mãos via API do PPPoker usando link de compartilhamento"
 
 #: templates/index.html:1009
 msgid "PokerStars-format hand history export"
-msgstr "Exportação de histórico de mãos no formato PokerStars"
+msgstr "Export de histórico de mãos no formato PokerStars"
 
 #: templates/index.html:1010
 msgid "Basic session stats (VPIP, PFR, hands played)"
