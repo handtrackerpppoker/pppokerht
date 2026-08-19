@@ -907,6 +907,35 @@ def _export_uid(req):
     return uid, None
 
 
+_EXPORT_ADS_DEFAULTS = {
+    'hand_enabled': True,
+    'tourney_enabled': True,
+    'hand_free_before_survey': FREE_HAND_EXPORTS_UNGATED,
+    'tourney_free_before_survey': 0,   # today's behaviour: every tourney export is gated
+}
+
+
+def _export_ads_config():
+    """Admin-configurable survey-gate settings for hand/tourney exports.
+
+    Read fresh from Firestore on every call, the same as _active_plan() — an
+    admin toggle takes effect on the very next request, no redeploy or cache to
+    invalidate. Falls back to the defaults (which reproduce today's hardcoded
+    behaviour) on a missing doc or any read failure.
+    """
+    cfg = dict(_EXPORT_ADS_DEFAULTS)
+    try:
+        snap = _get_admin_db().collection('config').document('export_ads').get()
+        stored = snap.to_dict() if snap.exists else {}
+    except Exception as exc:
+        print(f"[_export_ads_config] read failed: {type(exc).__name__}: {exc}")
+        stored = {}
+    for key in _EXPORT_ADS_DEFAULTS:
+        if key in stored:
+            cfg[key] = stored[key]
+    return cfg
+
+
 def _export_gate(req, uid, kind):
     """Quota/survey gate for one export. kind is 'hand' or 'tourney'.
 
@@ -915,18 +944,23 @@ def _export_gate(req, uid, kind):
     and must not consume the day's allowance.
 
     pro  → always allowed, uncounted
-    free → daily cap, then a survey credit or X-Ad-Token for the gated slots
+    free → daily cap (always enforced), then a survey credit or X-Ad-Token for
+           the gated slots — unless an admin has disabled that kind's survey
+           gate via /api/admin/export-ads-config, in which case the daily cap
+           still applies but no survey is ever required.
     """
     if _tier(uid) == 'pro':
         return _ExportGate(uid)
 
     state = _quota_state(uid)
+    ads = _export_ads_config()
     if kind == 'tourney':
         used, cap, quota_key = state['tourney_exports'], FREE_TOURNEY_EXPORTS_DAY, 'tourney_exports'
-        needs_unlock = True
+        enabled, free_before_survey = ads['tourney_enabled'], ads['tourney_free_before_survey']
     else:
         used, cap, quota_key = state['hand_exports'], FREE_HAND_EXPORTS_PER_DAY, 'hand_exports'
-        needs_unlock = used >= FREE_HAND_EXPORTS_UNGATED
+        enabled, free_before_survey = ads['hand_enabled'], ads['hand_free_before_survey']
+    needs_unlock = enabled and used >= free_before_survey
 
     if used >= cap:
         return _ExportGate(uid, error=(jsonify({
@@ -2094,6 +2128,47 @@ def admin_pricing_set():
         'updated_by':  uid,
     }, merge=True)
     return jsonify({'ok': True, 'active_plan': key})
+
+
+@app.route('/api/admin/export-ads-config', methods=['GET'])
+def admin_export_ads_config_get():
+    uid = _verify_bearer(request)
+    if not _is_admin(uid):
+        return jsonify({'error': 'Forbidden'}), 403
+    return jsonify(_export_ads_config())
+
+
+@app.route('/api/admin/export-ads-config', methods=['POST'])
+def admin_export_ads_config_set():
+    """Whole-config replace of the fields present in the body — merge='True'
+    on the Firestore write, so an admin can flip one field without resending
+    the others, but each field present is validated on its own type."""
+    uid = _verify_bearer(request)
+    if not _is_admin(uid):
+        return jsonify({'error': 'Forbidden'}), 403
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({'error': 'Malformed request body'}), 400
+
+    update = {}
+    for key in ('hand_enabled', 'tourney_enabled'):
+        if key in body:
+            if not isinstance(body[key], bool):
+                return jsonify({'error': f'{key} must be a boolean'}), 400
+            update[key] = body[key]
+    for key in ('hand_free_before_survey', 'tourney_free_before_survey'):
+        if key in body:
+            val = body[key]
+            if isinstance(val, bool) or not isinstance(val, int) or val < 0:
+                return jsonify({'error': f'{key} must be a non-negative integer'}), 400
+            update[key] = val
+    if not update:
+        return jsonify({'error': 'No recognised fields in request body'}), 400
+
+    update['updated_at'] = int(time.time())
+    update['updated_by'] = uid
+    _get_admin_db().collection('config').document('export_ads').set(update, merge=True)
+    return jsonify(_export_ads_config())
 
 
 def _fetch_tournament_records(uid, tourney_id):

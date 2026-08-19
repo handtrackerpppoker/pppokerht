@@ -428,6 +428,78 @@ def test_export_gates():
               A._quota_state(PRO_UID)['hand_exports'] == 0)
 
 
+# ── 4b. Export ads config (admin-controlled survey gate) ────────────────────
+
+def test_export_ads_config():
+    print('export ads config')
+    _reset_user(FREE_UID)
+    _put_tournament(FREE_UID, 'trecent', RECENT_TS)
+    _stub_tournament_records({'trecent': _records('trecent')})
+    DB._d.pop(('config', 'export_ads'), None)
+    DB.put(('config', 'admins'), {'uids': ['uid-admin']})
+
+    as_user(None)
+    check('config endpoint needs an account',
+          CLIENT.get('/api/admin/export-ads-config').status_code == 403)
+
+    as_user(FREE_UID)  # not an admin
+    check('non-admin cannot read the config',
+          CLIENT.get('/api/admin/export-ads-config').status_code == 403)
+    check('non-admin cannot write the config',
+          CLIENT.post('/api/admin/export-ads-config',
+                      json={'hand_enabled': False}).status_code == 403)
+
+    as_user('uid-admin')
+    res = CLIENT.get('/api/admin/export-ads-config')
+    check('admin can read the config', res.status_code == 200, str(res.status_code))
+    check('default config reproduces the hardcoded constants',
+          res.get_json() == {'hand_enabled': True, 'tourney_enabled': True,
+                             'hand_free_before_survey': A.FREE_HAND_EXPORTS_UNGATED,
+                             'tourney_free_before_survey': 0}, str(res.get_json()))
+
+    for bad in ({'hand_enabled': 'yes'}, {'hand_free_before_survey': -1},
+                {'hand_free_before_survey': True}, {'tourney_free_before_survey': 'x'}, {}):
+        res = CLIENT.post('/api/admin/export-ads-config', json=bad)
+        check(f'rejects malformed body {bad}', res.status_code == 400, str(res.status_code))
+
+    res = CLIENT.post('/api/admin/export-ads-config', json={'hand_enabled': False})
+    check('disabling hand ads 200', res.status_code == 200, str(res.status_code))
+    check('disabling one field leaves the others at default',
+          res.get_json()['tourney_enabled'] is True, str(res.get_json()))
+
+    as_user(FREE_UID)
+    codes = [_export_hand().status_code for _ in range(5)]
+    check('with hand ads disabled, all 5 free hand exports need no survey',
+          codes == [200] * 5, str(codes))
+    res = _export_hand()
+    check('the daily hard cap still applies once ads are disabled',
+          res.status_code == 402 and res.get_json().get('error') == 'quota_exceeded',
+          f'{res.status_code} {res.get_json()}')
+
+    _reset_user(FREE_UID)
+    as_user('uid-admin')
+    res = CLIENT.post('/api/admin/export-ads-config',
+                      json={'hand_enabled': True, 'hand_free_before_survey': 0,
+                            'tourney_enabled': True, 'tourney_free_before_survey': 1})
+    check('reconfiguring free-before-survey counts 200', res.status_code == 200)
+
+    as_user(FREE_UID)
+    res = _export_hand()
+    check('hand export 1 now needs a survey immediately (free_before_survey=0)',
+          res.status_code == 402 and res.get_json().get('error') == 'survey_required',
+          f'{res.status_code} {res.get_json()}')
+
+    res = _export_tourney()
+    check('tourney export 1 no longer needs a survey (free_before_survey=1)',
+          res.status_code == 200, str(res.status_code))
+    res = _export_tourney()
+    check('but the daily tourney cap still bites on export 2',
+          res.status_code == 402 and res.get_json().get('error') == 'quota_exceeded',
+          f'{res.status_code} {res.get_json()}')
+
+    DB._d.pop(('config', 'export_ads'), None)
+
+
 # ── 5. The 7-day history window ──────────────────────────────────────────────
 
 def test_history_window():
@@ -718,6 +790,7 @@ def test_credit_endpoints():
 
 def main():
     for test in (test_quota, test_credits, test_ad_tokens, test_export_gates,
+                 test_export_ads_config,
                  test_history_window, test_import_quota_and_window,
                  test_free_import_prunes_old_tournaments, test_anon_import_and_claim,
                  test_cpx_postback, test_tally_callback, test_credit_endpoints):
